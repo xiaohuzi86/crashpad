@@ -1193,6 +1193,35 @@ int HandlerMain(int argc,
 
   exception_handler_server.Run(exception_handler.get());
 
+// 进程退出前启动 CrashReport 崩溃报告程序
+#if BUILDFLAG(IS_APPLE)
+  char* argv[] = {"./CrashReport.app/Contents/MacOS/CrashReport", nullptr};
+  posix_spawn(nullptr, argv[0], nullptr, nullptr, argv, nullptr)
+#elif BUILDFLAG(IS_WIN)
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  ZeroMemory(&pi, sizeof(pi));
+
+  if (CreateProcess(".\\CrashReport.exe",
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    false,
+                    0,
+                    nullptr,
+                    nullptr,
+                    &si,
+                    &pi)) {
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+  }
+#endif
+
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+
   return EXIT_SUCCESS;
 }
 
