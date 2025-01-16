@@ -27,6 +27,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -1220,7 +1222,7 @@ int HandlerMain(int argc,
   }
 #endif
 
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 
   return EXIT_SUCCESS;
 }
