@@ -1198,7 +1198,8 @@ int HandlerMain(int argc,
 
 // 进程退出前启动 CrashReport 崩溃报告程序
 #if BUILDFLAG(IS_APPLE)
-  char* crash_report_argv[] = {const_cast<char*>("./CrashReport"), nullptr};
+  auto dir_path = argv0.DirName().value() + "/../../MacOS/CrashReport";
+  char* crash_report_argv[] = {const_cast<char*>(dir_path.c_str()), nullptr};
   posix_spawn(nullptr, crash_report_argv[0], nullptr, nullptr, crash_report_argv, nullptr);
 #elif BUILDFLAG(IS_WIN)
   STARTUPINFO si;
