@@ -1207,7 +1207,7 @@ int HandlerMain(int argc,
   si.cb = sizeof(si);
   ZeroMemory(&pi, sizeof(pi));
 
-  if (CreateProcess(L".\\CrashReport.exe",
+  if (CreateProcess(L"CrashReport.exe",
                     nullptr,
                     nullptr,
                     nullptr,
