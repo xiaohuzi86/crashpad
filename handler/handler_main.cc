@@ -72,6 +72,7 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <libgen.h>
 #include <signal.h>
+#include <spawn.h>
 
 #include "base/apple/scoped_mach_port.h"
 #include "handler/mac/crash_report_exception_handler.h"
@@ -1197,8 +1198,8 @@ int HandlerMain(int argc,
 
 // 进程退出前启动 CrashReport 崩溃报告程序
 #if BUILDFLAG(IS_APPLE)
-  char* argv[] = {"./CrashReport.app/Contents/MacOS/CrashReport", nullptr};
-  posix_spawn(nullptr, argv[0], nullptr, nullptr, argv, nullptr)
+  char* crash_report_argv[] = {const_cast<char*>("./CrashReport"), nullptr};
+  posix_spawn(nullptr, crash_report_argv[0], nullptr, nullptr, crash_report_argv, nullptr);
 #elif BUILDFLAG(IS_WIN)
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
