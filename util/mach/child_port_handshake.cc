@@ -50,7 +50,7 @@ namespace {
 
 class ChildPortHandshakeServer final : public ChildPortServer::Interface {
 public:
-  static std::string identifier_;
+  static std::string* identifier_;
 
  public:
   ChildPortHandshakeServer();
@@ -78,7 +78,7 @@ public:
   bool checked_in_;
 };
 
-std::string ChildPortHandshakeServer::identifier_;
+std::string* ChildPortHandshakeServer::identifier_ = nullptr;
 
 ChildPortHandshakeServer::ChildPortHandshakeServer()
     : token_(0),
@@ -117,7 +117,7 @@ mach_port_t ChildPortHandshakeServer::RunServer(
   //     RandomString().c_str());
   std::string service_name = base::StringPrintf(
       "org.chromium.crashpad.child_port_handshake.%s",
-      identifier_.c_str());
+      identifier_->c_str());
   LOG(INFO) << "service_name:" << service_name.c_str();
   
   // Check the new service in with the bootstrap server, obtaining a receive
@@ -469,7 +469,7 @@ bool ChildPortHandshake::RunClientInternal_SendCheckIn(
 }
 // static
 void ChildPortHandshake::SetIdentifier(std::string identifier) {
-  ChildPortHandshakeServer::identifier_ = identifier;
+  ChildPortHandshakeServer::identifier_ = new std::string(identifier);
 }
 
 }  // namespace crashpad
