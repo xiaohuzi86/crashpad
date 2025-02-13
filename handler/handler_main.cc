@@ -633,6 +633,9 @@ int HandlerMain(int argc,
 #if BUILDFLAG(IS_ANDROID)
     kOptionWriteMinidumpToLog,
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_APPLE)
+    kOptionMacIdentifier,
+#endif  // BUILDFLAG(IS_APPLE)
 
     // Standard options.
     kOptionHelp = -2,
@@ -723,6 +726,10 @@ int HandlerMain(int argc,
 #if BUILDFLAG(IS_ANDROID)
     {"write-minidump-to-log", no_argument, nullptr, kOptionWriteMinidumpToLog},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    {"mac-identifier", no_argument, nullptr, kOptionMacIdentifier},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"help", no_argument, nullptr, kOptionHelp},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -903,6 +910,12 @@ int HandlerMain(int argc,
         break;
       }
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_APPLE)
+      case kOptionMacIdentifier: {
+        ChildPortHandshake::SetIdentifier(optarg);
+        break;
+      }
+#endif  // BUILDFLAG(IS_APPLE)
       case kOptionHelp: {
         Usage(me);
         MetricsRecordExit(Metrics::LifetimeMilestone::kExitedEarly);

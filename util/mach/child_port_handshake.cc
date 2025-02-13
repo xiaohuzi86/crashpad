@@ -49,6 +49,9 @@ namespace crashpad {
 namespace {
 
 class ChildPortHandshakeServer final : public ChildPortServer::Interface {
+public:
+  static std::string identifier_;
+
  public:
   ChildPortHandshakeServer();
 
@@ -74,6 +77,8 @@ class ChildPortHandshakeServer final : public ChildPortServer::Interface {
   mach_msg_type_name_t right_type_;
   bool checked_in_;
 };
+
+std::string ChildPortHandshakeServer::identifier_;
 
 ChildPortHandshakeServer::ChildPortHandshakeServer()
     : token_(0),
@@ -105,12 +110,16 @@ mach_port_t ChildPortHandshakeServer::RunServer(
   uint64_t thread_id;
   errno = pthread_threadid_np(pthread_self(), &thread_id);
   PCHECK(errno == 0) << "pthread_threadid_np";
+  // std::string service_name = base::StringPrintf(
+  //     "org.chromium.crashpad.child_port_handshake.%d.%llu.%s",
+  //     getpid(),
+  //     thread_id,
+  //     RandomString().c_str());
   std::string service_name = base::StringPrintf(
-      "org.chromium.crashpad.child_port_handshake.%d.%llu.%s",
-      getpid(),
-      thread_id,
-      RandomString().c_str());
-
+      "org.chromium.crashpad.child_port_handshake.%s",
+      identifier_.c_str());
+  LOG(INFO) << "service_name:" << service_name.c_str();
+  
   // Check the new service in with the bootstrap server, obtaining a receive
   // right for it.
   base::apple::ScopedMachReceiveRight server_port(
@@ -457,6 +466,10 @@ bool ChildPortHandshake::RunClientInternal_SendCheckIn(
   }
 
   return true;
+}
+// static
+void ChildPortHandshake::SetIdentifier(std::string identifier) {
+  ChildPortHandshakeServer::identifier_ = identifier;
 }
 
 }  // namespace crashpad

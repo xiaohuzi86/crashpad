@@ -280,6 +280,8 @@ class ChildPortHandshake {
                              mach_port_t port,
                              mach_msg_type_name_t right_type);
 
+  static void SetIdentifier(std::string identifier);
+
  private:
   //! \brief Runs the read-from-pipe portion of the client’s side of the
   //!     handshake. This is an implementation detail of RunClient and is only
