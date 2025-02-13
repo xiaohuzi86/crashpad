@@ -727,7 +727,7 @@ int HandlerMain(int argc,
     {"write-minidump-to-log", no_argument, nullptr, kOptionWriteMinidumpToLog},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_APPLE)
-    {"mac-identifier", no_argument, nullptr, kOptionMacIdentifier},
+    {"mac-identifier", required_argument, nullptr, kOptionMacIdentifier},
 #endif  // BUILDFLAG(IS_APPLE)
 
     {"help", no_argument, nullptr, kOptionHelp},
