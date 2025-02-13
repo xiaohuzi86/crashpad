@@ -82,6 +82,7 @@
 #include "util/mach/child_port_handshake.h"
 #include "util/posix/close_stdio.h"
 #include "util/posix/signals.h"
+#include "util/posix/spawn_subprocess.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -1212,8 +1213,18 @@ int HandlerMain(int argc,
 // 进程退出前启动 CrashReport 崩溃报告程序
 #if BUILDFLAG(IS_APPLE)
   auto dir_path = argv0.DirName().value() + "/../../../MacOS/CrashReport";
-  char* crash_report_argv[] = {const_cast<char*>(dir_path.c_str()), nullptr};
-  posix_spawn(nullptr, crash_report_argv[0], nullptr, nullptr, crash_report_argv, nullptr);
+  LOG(INFO) << "crashreport path:" << dir_path.c_str();
+  ChildPortHandshake child_port_handshake;
+  base::ScopedFD server_write_fd = child_port_handshake.ServerWriteFD();
+  std::vector<std::string> crash_report_argv;
+  crash_report_argv.push_back(dir_path);
+  auto ret = SpawnSubprocess(
+            crash_report_argv,
+            nullptr,
+            server_write_fd.get(),
+            true,
+            nullptr);
+  LOG(INFO) << "SpawnSubprocess result code:" << (ret ? "true" : "false");
 #elif BUILDFLAG(IS_WIN)
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
